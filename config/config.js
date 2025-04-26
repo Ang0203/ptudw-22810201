@@ -13,5 +13,16 @@ module.exports = {
         rejectUnauthorized: false
       }
     }
+  },
+  production: {
+    use_env_variable: "POSTGRESQL_URL",
+    dialect: "postgres",
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    },
+    logging: false
   }
 };
