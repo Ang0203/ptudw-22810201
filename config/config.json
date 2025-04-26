@@ -12,13 +12,6 @@
       }
     }
   },
-  "test": {
-    "username": "root",
-    "password": null,
-    "database": "database_test",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
-  },
   "production": {
     "username": "ptudw_project_db_5biw_user",
     "password": "WBtNBhiLGrAS5JWw3SmxaHsipJghd2oP",
@@ -30,6 +23,7 @@
         "require": true,
         "rejectUnauthorized": false
       }
-    }
+    },
+    "logging": false
   }
 }
