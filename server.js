@@ -1,32 +1,21 @@
 require("dotenv").config();
 const express = require("express");
-const session = require("express-session");
-const cors = require("cors");
-const path = require("path");
-const morgan = require("morgan");
 
+const session = require("express-session");
+const redisStore = require("connect-redis").default;
+const { createClient } = require("redis");
+const redisUrl = process.env.ENV !== "development"
+    ? "redis://red-d06c5us9c44c73fdtdjg:6379"
+    : "rediss://red-d06c5us9c44c73fdtdjg:aF2vyOCnFkRjPGRIPnfmK8VbgSjp41bQ@singapore-keyvalue.render.com:6379";
+const redisClient = createClient({ url: redisUrl });
+redisClient.connect().catch(console.error);
 const app = express();
 
 // [Logging for Development]
+const morgan = require("morgan");
 if (process.env.ENV === "development") {
     app.use(morgan('dev'));
 }
-
-// [CORS]
-const allowedOrigins = process.env.CLIENT_URLS 
-    ? process.env.CLIENT_URLS.split(",") 
-    : ["http://localhost:22700"];
-app.use(cors({
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error("CORS policy error"), false);
-        }
-    },
-    methods: ["GET", "POST"],
-    credentials: true
-}));
 
 // [Handlebars]
 const hbs = require("express-handlebars");
@@ -34,8 +23,8 @@ const { createStarList } = require("./helpers/handlebars-helper.js");
 const { createPagination } = require("express-handlebars-paginate");
 
 app.engine("hbs", hbs.engine({
-    layoutsDir: path.join(__dirname, "/views/layouts"),
-    partialsDir: path.join(__dirname, "/views/partials"),
+    layoutsDir: __dirname + "/views/layouts",
+    partialsDir: __dirname + "/views/partials",
     extname: "hbs",
     defaultLayout: "layout",
     runtimeOptions: {
@@ -49,11 +38,12 @@ app.engine("hbs", hbs.engine({
 app.set("view engine", "hbs");
 
 // [Static files]
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static("public"));
 
 // [Session]
 app.use(session({
     secret: "2207",
+    store: new redisStore({ client: redisClient }),
     resave: false,
     saveUninitialized: false,
     cookie: {
