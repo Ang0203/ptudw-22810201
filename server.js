@@ -3,16 +3,13 @@ const express = require("express");
 const session = require("express-session");
 const redisStore = require("connect-redis").default;
 const { createClient } = require("redis");
-const redisUrl = process.env.ENV !== "development"
-    ? "redis://red-d06c5us9c44c73fdtdjg:6379"
-    : "rediss://red-d06c5us9c44c73fdtdjg:aF2vyOCnFkRjPGRIPnfmK8VbgSjp41bQ@singapore-keyvalue.render.com:6379";
-const redisClient = createClient({ url: redisUrl });
+const redisClient = createClient({ url: process.env.REDIS_URL });
 redisClient.connect().catch(console.error);
 const app = express();
 
 // [Logging for Development]
-const morgan = require("morgan");
 if (process.env.ENV === "development") {
+    const morgan = require("morgan");
     app.use(morgan('dev'));
 }
 
@@ -41,7 +38,7 @@ app.use(express.static("public"));
 
 // [Session]
 app.use(session({
-    secret: "2207",
+    secret: process.env.SESSION_SECRET,
     store: new redisStore({ client: redisClient }),
     resave: false,
     saveUninitialized: false,
