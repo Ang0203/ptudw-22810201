@@ -124,7 +124,7 @@ controller.showDetails = async (req, res) => {
 
     // Related Products
     let tagIds = [];
-    product.Tag.forEach(tag => {
+    product.Tags.forEach(tag => {
         tagIds.push(tag.id);
     });
     let relatedProducts = await models.Product.findAll({
