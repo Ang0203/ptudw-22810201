@@ -1,14 +1,20 @@
-npm i -g pnpm
+Invoke-WebRequest -Uri "https://github.com/coreybutler/nvm-windows/releases/download/1.1.12/nvm-setup.exe" -OutFile "$env:TEMP\nvm-setup.exe"
+Start-Process -FilePath "$env:TEMP\nvm-setup.exe"
+nvm install 22.12.0
+nvm use 22.12.0
+node -v
+
+=================================================
+
+npm i -g pnpm@10.6.2
 
 pnpm init
 
 pnpm i -g sequelize-cli
 
-pnpm i express express-handlebars pg pg-hstore sequelize
-
 sequelize init
 
-------------------------------------------------
+=================================================
 
 require("./models").sequelize.sync({force: true})
     .then(() => {
@@ -17,6 +23,10 @@ require("./models").sequelize.sync({force: true})
         console.log(`Error syncing database: ${error.message}`);
     })
 
------------------------------------------------
+=================================================
 
-sequelize db:seed:all
+"scripts": {
+    "db": "node create-tables.js && sequelize db:seed:all",
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
